@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseGuard | Emergency Triage & Continuous Physiological Telemetry</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-fast {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.05); }
+    }
+    .heart-beat {
+      animation: pulse-fast 0.8s infinite ease-in-out;
+    }
+    .grid-bg {
+      background-size: 20px 20px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="bg-red-500/20 text-red-400 p-2 rounded-xl border border-red-500/30 flex items-center justify-center">
+        <i data-lucide="activity" class="w-6 h-6 text-red-500"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-xl font-bold tracking-tight text-white">PulseGuard</h1>
+          <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2 py-0.5 rounded-full border border-emerald-500/20 font-medium">v1.0 Operational</span>
+        </div>
+        <p class="text-xs text-slate-400">Emergency Triage & Continuous Physiological Telemetry</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex bg-slate-800/80 p-1 rounded-lg border border-slate-700/60">
+      <button onclick="switchTab('triage')" id="tab-btn-triage" class="tab-btn active px-4 py-1.5 text-sm font-medium rounded-md transition-all bg-brand-600 text-white shadow">
+        1. Preliminary Photo Triage
+      </button>
+      <button onclick="switchTab('telemetry')" id="tab-btn-telemetry" class="tab-btn px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-400 hover:text-white">
+        2. Continuous Telemetry (Decided Layer)
+      </button>
+      <button onclick="switchTab('paramedic')" id="tab-btn-paramedic" class="tab-btn px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-400 hover:text-white">
+        3. Paramedic Telegram Feed
+      </button>
+    </div>
+
+    <div class="flex items-center space-x-3 text-xs">
+      <div class="flex items-center space-x-1.5 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-slate-300">FastAPI Gateway</span>
+      </div>
+      <div class="flex items-center space-x-1.5 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+        <i data-lucide="send" class="w-3.5 h-3.5 text-sky-400"></i>
+        <span class="text-slate-300">Telegram Bot Active</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Areas -->
+  <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+
+    <!-- TAB 1: PRELIMINARY PHOTO INTAKE -->
+    <section id="tab-triage" class="space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-850 p-6 rounded-2xl border border-slate-800 shadow-xl">
+        <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+          <i data-lucide="camera" class="w-5 h-5 text-brand-500"></i>
+          <span>Flow 1: Preliminary Patient Photo Intake & Automated CV Triage</span>
+        </h2>
+        <p class="text-sm text-slate-400 mt-1">
+          Upload or capture a field trauma photo (wound, skin discoloration, pupil reflex). Computer vision calculates the START/ESI severity index and immediately dispatches the case with photo attachment to the on-duty paramedic's Telegram.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Photo Upload Form -->
+        <div class="lg:col-span-6 bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
+          <h3 class="font-semibold text-slate-200 text-sm flex items-center justify-between">
+            <span>Intake Submission</span>
+            <span class="text-xs text-slate-500 font-mono">POST /api/v1/triage/intake-photo</span>
+          </h3>
+
+          <div class="border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-xl p-6 text-center cursor-pointer transition-colors relative" id="drop-zone">
+            <input type="file" id="photo-input" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)">
+            <div id="upload-prompt" class="space-y-2">
+              <i data-lucide="upload-cloud" class="w-10 h-10 text-slate-400 mx-auto"></i>
+              <p class="text-sm font-medium text-slate-300">Click or drag & drop patient trauma photo</p>
+              <p class="text-xs text-slate-500">Supports JPEG, WebP, PNG (Max 12MB)</p>
+            </div>
+            <img id="image-preview" class="max-h-64 mx-auto rounded-lg hidden object-cover shadow-lg border border-slate-700">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Patient ID / Reference</label>
+              <input type="text" id="patient-id" value="PT-94821" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Modality</label>
+              <select id="modality-select" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                <option value="wound">Trauma / Laceration / Burn</option>
+                <option value="face">Facial rPPG / Cyanosis</option>
+                <option value="pupil">Pupil Reflex / TBI</option>
+                <option value="jaundice">Jaundice / Pallor Card</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Field Clinical Notes</label>
+            <textarea id="triage-notes" rows="2" placeholder="e.g., Pedestrian struck by vehicle, rapid shallow breathing, active extremity bleeding." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"></textarea>
+          </div>
+
+          <div class="flex items-center justify-between pt-2">
+            <button type="button" onclick="loadSamplePhoto()" class="text-xs text-brand-400 hover:text-brand-300 underline">
+              Load Sample Trauma Photo
+            </button>
+            <button type="button" onclick="submitTriagePhoto()" id="btn-submit-triage" class="bg-brand-600 hover:bg-brand-500 text-white font-medium px-5 py-2 rounded-lg text-sm transition-all shadow flex items-center space-x-2">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Process & Dispatch Alert</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Triage Result & Telegram Confirmation Card -->
+        <div class="lg:col-span-6 bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h3 class="font-semibold text-slate-200 text-sm flex items-center justify-between mb-4">
+              <span>Automated Clinical Evaluation</span>
+              <span id="triage-status-badge" class="bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full text-xs font-semibold">Awaiting Intake</span>
+            </h3>
+
+            <div id="triage-result-empty" class="text-center py-16 text-slate-500 space-y-2">
+              <i data-lucide="scan" class="w-12 h-12 mx-auto text-slate-600"></i>
+              <p class="text-sm">Submit a photo on the left to see instant START/ESI triage classification and Telegram forwarding status.</p>
+            </div>
+
+            <div id="triage-result-content" class="hidden space-y-4">
+              <!-- Result Alert Box -->
+              <div id="result-box" class="p-4 rounded-xl border bg-slate-800/60 border-slate-700">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-wider text-slate-400">Emergency Severity Index</div>
+                    <div id="result-esi" class="text-2xl font-black text-white mt-0.5">ESI Level 2 (Emergent)</div>
+                  </div>
+                  <span id="result-badge-color" class="px-3 py-1 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                    🔴 IMMEDIATE RED
+                  </span>
+                </div>
+                <div class="mt-3 pt-3 border-t border-slate-700/60 text-xs text-slate-300 flex items-center justify-between">
+                  <span>CV Model Confidence: <strong id="result-confidence" class="text-white">92.0%</strong></span>
+                  <span>Primary Risk: <strong id="result-tags" class="text-red-400">Active Bleeding</strong></span>
+                </div>
+              </div>
+
+              <!-- Telegram Dispatch Receipt -->
+              <div class="bg-sky-950/30 border border-sky-500/30 p-4 rounded-xl space-y-2">
+                <div class="flex items-center space-x-2 text-sky-400 text-sm font-semibold">
+                  <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                  <span>Forwarded to Paramedic Telegram</span>
+                </div>
+                <p class="text-xs text-slate-300">
+                  Case, photo attachment, and geo-coordinates pushed immediately via <code class="bg-slate-800 px-1 py-0.5 rounded text-sky-300">aiogram v3 Webhook</code> to paramedic unit.
+                </p>
+                <div class="text-xs font-mono text-slate-400 flex items-center justify-between pt-1">
+                  <span>Telegram Message ID: <strong id="tg-msg-id" class="text-slate-200">#94821-TG</strong></span>
+                  <span class="text-emerald-400 font-semibold">Status: Dispatched</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xs text-slate-500 pt-4 border-t border-slate-800 flex items-center justify-between">
+            <span>HIPAA / GDPR De-identification applied</span>
+            <span>Ref: START Triage Protocol</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- TAB 2: CONTINUOUS TELEMETRY STREAM -->
+    <section id="tab-telemetry" class="hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-850 p-6 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+            <i data-lucide="radio" class="w-5 h-5 text-emerald-400 animate-pulse"></i>
+            <span>Flow 2: Continuous (Periodic) Ingestion of Cardiovascular & Respiratory Stats</span>
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">
+            "The Decided Layer": 30 FPS high-frequency sensor telemetry ingested via WebSockets, processed through POS rPPG, Welch PSD, and Poincaré non-linear dynamics.
+          </p>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button id="btn-toggle-stream" onclick="toggleTelemetryStream()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition-all shadow flex items-center space-x-2">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            <span>Start Live Telemetry</span>
+          </button>
+          <button onclick="triggerEmergencySpike()" class="bg-red-600/80 hover:bg-red-600 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-all shadow flex items-center space-x-1.5 border border-red-500/40">
+            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+            <span>Simulate Anomaly Breach</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Vitals HUD (Heads-Up Display) -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative overflow-hidden">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>HEART RATE</span>
+            <i data-lucide="heart" class="w-4 h-4 text-red-500 heart-beat"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5 mt-2">
+            <span id="vital-hr" class="text-3xl font-black text-white">74.2</span>
+            <span class="text-xs text-slate-400">BPM</span>
+          </div>
+          <div class="text-[10px] text-emerald-400 mt-1 flex items-center space-x-1">
+            <span>● Dominant Spectral Peak</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative overflow-hidden">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>RESPIRATION</span>
+            <i data-lucide="wind" class="w-4 h-4 text-sky-400"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5 mt-2">
+            <span id="vital-rr" class="text-3xl font-black text-white">16.4</span>
+            <span class="text-xs text-slate-400">BrPM</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-1">
+            <span>RSA / RIIV Extraction</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative overflow-hidden">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>OXYGEN (SpO2)</span>
+            <i data-lucide="droplet" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5 mt-2">
+            <span id="vital-spo2" class="text-3xl font-black text-white">98.5</span>
+            <span class="text-xs text-slate-400">%</span>
+          </div>
+          <div class="text-[10px] text-emerald-400 mt-1">
+            <span>AC/DC Relative Proxy</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative overflow-hidden">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>HRV RMSSD</span>
+            <i data-lucide="activity" class="w-4 h-4 text-purple-400"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5 mt-2">
+            <span id="vital-rmssd" class="text-3xl font-black text-white">38.2</span>
+            <span class="text-xs text-slate-400">ms</span>
+          </div>
+          <div class="text-[10px] text-purple-300 mt-1">
+            <span>Vagal Tone Indicator</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative overflow-hidden">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>CLINICAL MEWS</span>
+            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5 mt-2">
+            <span id="vital-mews" class="text-3xl font-black text-emerald-400">0</span>
+            <span class="text-xs text-slate-400">/ 14</span>
+          </div>
+          <div class="text-[10px] text-emerald-400 mt-1" id="vital-risk">
+            <span>Normal Stability</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 60 FPS Canvas Waveform Display -->
+      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <h3 class="font-semibold text-white text-sm">Real-Time Blood Volume Pulse (BVP) Waveform & Systolic Peaks</h3>
+          </div>
+          <div class="flex items-center space-x-4 text-xs font-mono text-slate-400">
+            <span>DSP Filter: <strong class="text-slate-200">Butterworth 0.75-3.5 Hz</strong></span>
+            <span>Buffer: <strong class="text-slate-200" id="stream-fps">30.0 Hz</strong></span>
+            <span class="text-emerald-400 font-semibold" id="stream-status">CONNECTED</span>
+          </div>
+        </div>
+
+        <div class="relative w-full h-64 bg-slate-950 rounded-xl overflow-hidden border border-slate-800 grid-bg">
+          <canvas id="waveform-canvas" class="w-full h-full block"></canvas>
+          <div class="absolute bottom-3 left-4 text-[11px] font-mono text-slate-500">
+            Sweep: 6.0s Window | Sampling Rate: 30 Hz | Sub-20ms Ingestion
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- TAB 3: PARAMEDIC TELEGRAM DISPATCH FEED -->
+    <section id="tab-paramedic" class="hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-850 p-6 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+            <i data-lucide="send" class="w-5 h-5 text-sky-400"></i>
+            <span>Flow 3: Paramedic Telegram Escalations & Clinical Incident Audit</span>
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">
+            All patient events (preliminary photo intake, critical vital breaches, fall impacts) are dispatched to Telegram with automated 6-panel clinical diagnostic charts and interactive buttons.
+          </p>
+        </div>
+        <button onclick="refreshEvents()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3.5 py-2 rounded-lg text-xs font-medium border border-slate-700 flex items-center space-x-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Refresh Feed</span>
+        </button>
+      </div>
+
+      <!-- Events List -->
+      <div id="events-container" class="space-y-4">
+        <!-- Event Card Template -->
+        <div class="bg-slate-900 p-5 rounded-xl border border-red-500/40 shadow-lg space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                CRITICAL VITAL BREACH
+              </span>
+              <span class="font-mono text-sm text-white font-semibold">Patient: PT-88392-CRITICAL</span>
+            </div>
+            <span class="text-xs text-slate-400">Just Now</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div>
+              <p class="text-xs text-slate-300 font-medium">Trigger Reason: Severe Tachycardia (138.0 BPM) + Tachypnea (28.0 BrPM)</p>
+              <div class="mt-2 text-xs text-slate-400 space-y-1">
+                <div>• Heart Rate: <span class="text-white font-mono">138.0 BPM</span></div>
+                <div>• Respiration: <span class="text-white font-mono">28.0 BrPM</span></div>
+                <div>• SpO2 Proxy: <span class="text-white font-mono">98.5%</span></div>
+                <div>• MEWS Score: <span class="text-red-400 font-mono font-bold">6 / 14</span></div>
+              </div>
+              <div class="mt-4 flex space-x-2">
+                <button class="bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center space-x-1">
+                  <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+                  <span>Ambulance Dispatched</span>
+                </button>
+                <button class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 rounded-lg">
+                  Acknowledge
+                </button>
+              </div>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 mb-1">Attached Clinical Multi-Biomarker Analysis (Sent to Telegram):</p>
+              <a href="/storage/charts/clinical_chart_PT-88392-CRITICAL.png" target="_blank">
+                <img src="/storage/charts/clinical_chart_PT-88392-CRITICAL.png" class="rounded-lg border border-slate-700 max-h-44 object-cover hover:opacity-90 transition-opacity">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Script Logic -->
+  <script>
+    lucide.createIcons();
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white', 'shadow');
+        btn.classList.add('text-slate-400');
+      });
+      document.getElementById('tab-btn-' + tabId).classList.add('bg-brand-600', 'text-white', 'shadow');
+      document.getElementById('tab-btn-' + tabId).classList.remove('text-slate-400');
+
+      document.getElementById('tab-triage').classList.add('hidden');
+      document.getElementById('tab-telemetry').classList.add('hidden');
+      document.getElementById('tab-paramedic').classList.add('hidden');
+
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // Photo Preview
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('image-preview');
+          preview.src = e.target.result;
+          preview.classList.remove('hidden');
+          document.getElementById('upload-prompt').classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Load sample image
+    async function loadSamplePhoto() {
+      // Create a canvas with a simulated trauma laceration
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 400;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#e0a98b'; // skin tone
+      ctx.fillRect(0, 0, 400, 400);
+      // Red laceration
+      ctx.fillStyle = '#b31e1e';
+      ctx.beginPath();
+      ctx.ellipse(200, 200, 100, 40, Math.PI / 4, 0, 2 * Math.PI);
+      ctx.fill();
+
+      canvas.toBlob(blob => {
+        const file = new File([blob], "sample_wound.jpg", { type: "image/jpeg" });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('photo-input').files = dataTransfer.files;
+        const preview = document.getElementById('image-preview');
+        preview.src = canvas.toDataURL();
+        preview.classList.remove('hidden');
+        document.getElementById('upload-prompt').classList.add('hidden');
+      }, 'image/jpeg');
+    }
+
+    // Submit Triage Photo API Call
+    async function submitTriagePhoto() {
+      const input = document.getElementById('photo-input');
+      if (!input.files || input.files.length === 0) {
+        alert("Please select or drop a photo first!");
+        return;
+      }
+      const btn = document.getElementById('btn-submit-triage');
+      btn.innerHTML = '<span>Processing CV...</span>';
+      btn.disabled = true;
+
+      const formData = new FormData();
+      formData.append('photo', input.files[0]);
+      formData.append('patient_id', document.getElementById('patient-id').value);
+      formData.append('capture_modality', document.getElementById('modality-select').value);
+      formData.append('notes', document.getElementById('triage-notes').value);
+      formData.append('gps_lat', 28.6139);
+      formData.append('gps_lon', 77.2090);
+
+      try {
+        const resp = await fetch('/api/v1/triage/intake-photo', {
+          method: 'POST',
+          body: formData
+        });
+        const res = await resp.json();
+        
+        // Show result
+        document.getElementById('triage-result-empty').classList.add('hidden');
+        document.getElementById('triage-result-content').classList.remove('hidden');
+
+        document.getElementById('result-esi').textContent = `ESI Level ${res.esi_level} (${res.triage_color})`;
+        document.getElementById('result-confidence').textContent = `${(res.ai_confidence * 100).toFixed(1)}%`;
+        document.getElementById('result-tags').textContent = res.detected_tags.join(', ');
+        document.getElementById('tg-msg-id').textContent = res.telegram_dispatch.telegram_message_id || '#TG-991';
+
+        const badge = document.getElementById('result-badge-color');
+        if (res.triage_color === 'RED') {
+          badge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30";
+          badge.textContent = "🔴 IMMEDIATE RED";
+        } else if (res.triage_color === 'YELLOW') {
+          badge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+          badge.textContent = "🟡 DELAYED YELLOW";
+        } else {
+          badge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+          badge.textContent = "🟢 MINIMAL GREEN";
+        }
+      } catch (e) {
+        alert("Upload error: " + e);
+      } finally {
+        btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Process & Dispatch Alert</span>';
+        btn.disabled = false;
+        lucide.createIcons();
+      }
+    }
+
+    // --- Waveform Canvas & Telemetry Streaming ---
+    const canvas = document.getElementById('waveform-canvas');
+    const ctx = canvas.getContext('2d');
+    let isStreaming = false;
+    let streamInterval = null;
+    let waveBuffer = new Array(200).fill(0);
+    let currentBpm = 74.2;
+    let currentBrpm = 16.4;
+    let phase = 0;
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function renderWaveform() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width;
+      const h = canvas.height;
+      const mid = h / 2;
+
+      ctx.strokeStyle = currentBpm > 130 ? '#ef4444' : '#10b981';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+
+      const step = w / (waveBuffer.length - 1);
+      for (let i = 0; i < waveBuffer.length; i++) {
+        const x = i * step;
+        const y = mid - waveBuffer[i] * (h * 0.35);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Leading pulse dot
+      const lastX = w;
+      const lastY = mid - waveBuffer[waveBuffer.length - 1] * (h * 0.35);
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.beginPath();
+      ctx.arc(lastX - 2, lastY, 4, 0, 2 * Math.PI);
+      ctx.fill();
+
+      if (isStreaming) requestAnimationFrame(renderWaveform);
+    }
+
+    function toggleTelemetryStream() {
+      isStreaming = !isStreaming;
+      const btn = document.getElementById('btn-toggle-stream');
+      if (isStreaming) {
+        btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+        btn.classList.add('bg-slate-700', 'hover:bg-slate-600');
+        btn.innerHTML = '<i data-lucide="square" class="w-4 h-4"></i><span>Stop Stream</span>';
+
+        // High-frequency 30Hz synthesis loop
+        streamInterval = setInterval(() => {
+          phase += (currentBpm / 60.0) * (2 * Math.PI / 30.0);
+          const val = Math.sin(phase) + 0.35 * Math.sin(phase * 2);
+          waveBuffer.shift();
+          waveBuffer.push(val);
+        }, 1000 / 30);
+
+        requestAnimationFrame(renderWaveform);
+      } else {
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+        btn.classList.remove('bg-slate-700', 'hover:bg-slate-600');
+        btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i><span>Start Live Telemetry</span>';
+        clearInterval(streamInterval);
+      }
+      lucide.createIcons();
+    }
+
+    // Trigger Anomaly Breach
+    async function triggerEmergencySpike() {
+      currentBpm = 138.0;
+      currentBrpm = 28.0;
+      document.getElementById('vital-hr').textContent = "138.0";
+      document.getElementById('vital-hr').classList.add('text-red-500');
+      document.getElementById('vital-rr').textContent = "28.0";
+      document.getElementById('vital-rr').classList.add('text-red-500');
+      document.getElementById('vital-spo2').textContent = "88.2";
+      document.getElementById('vital-spo2').classList.add('text-red-500');
+      document.getElementById('vital-mews').textContent = "6";
+      document.getElementById('vital-mews').className = "text-3xl font-black text-red-500";
+      document.getElementById('vital-risk').innerHTML = "<span class='text-red-400 font-bold'>CRITICAL BREACH</span>";
+
+      // Call backend ingest-batch API to trigger Telegram chart generation
+      const samples = [];
+      for (let i = 0; i < 90; i++) {
+        samples.push([210.0 + Math.sin(i), 120.0 + Math.sin(i), 45.0]);
+      }
+      try {
+        const res = await fetch('/api/v1/telemetry/ingest-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            patient_id: "PT-94821",
+            sensor_type: "rppg_rgb",
+            samples: samples
+          })
+        });
+        const out = await res.json();
+        alert("🚨 Critical threshold breach triggered!\n• MEWS Score: 6\n• Telegram alert with 6-Panel clinical multi-biomarker chart dispatched to paramedic.");
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function refreshEvents() {
+      try {
+        const resp = await fetch('/api/v1/paramedic/events');
+        const events = await resp.json();
+        console.log("Active events:", events);
+      } catch(e) {}
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # 1. TimescaleDB (Time-series physiological hypertable storage)
+  timescaledb:
+    image: timescale/timescaledb-ha:pg16
+    container_name: pulseguard-timescaledb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pulseguard_password
+      POSTGRES_DB: pulseguard
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale_data:/home/postgres/pgdata/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis 7.2 (Stream broker for high-frequency telemetry)
+  redis:
+    image: redis:7.2-alpine
+    container_name: pulseguard-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. MinIO (S3-compatible secure object storage for triage images & charts)
+  minio:
+    image: minio/minio:latest
+    container_name: pulseguard-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  # 4. PulseGuard Core API Gateway & Real-Time Telemetry Server
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pulseguard-gateway
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DATABASE_URL=sqlite+aiosqlite:///./pulseguard.db
+      - REDIS_URL=redis://redis:6379/0
+      - STORAGE_LOCAL_DIR=/app/storage
+    depends_on:
+      - timescaledb
+      - redis
+      - minio
+    volumes:
+      - ./storage:/app/storage
+
+volumes:
+  timescale_data:
+  redis_data:
+  minio_data:

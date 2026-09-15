@@ -1,0 +1,21 @@
+{
+  "name": "khunchuse",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "> **Open-Source Industrial-Grade Edge-to-Cloud Tele-Triage & Monitoring Platform**",
+  "main": "index.js",
+  "scripts": {
+    "start:backend": "node --experimental-strip-types backend/src/index.ts",
+    "test:simulation": "node --experimental-strip-types run_simulation.ts",
+    "dev:frontend": "npm --prefix frontend run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^26.5.1",
+    "@types/ws": "^8.18.1",
+    "dotenv": "^17.4.2",
+    "ws": "^8.21.3"
+  }
+}

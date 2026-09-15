@@ -1,0 +1,129 @@
+
+<svg width="1280" height="960" viewBox="0 0 1280 960" xmlns="http://www.w3.org/2000/svg" style="background:#090d16; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <!-- Header Bar -->
+  <rect x="0" y="0" width="1280" height="60" fill="#0f172a" border="none"/>
+  <text x="40" y="38" font-size="20" font-weight="bold" fill="#38bdf8">
+    THE INTERMEDIATOR | Emergency Collapse Hemodynamic Monitor
+  </text>
+  <text x="1240" y="38" font-size="13" font-weight="semibold" text-anchor="end" fill="#94a3b8">
+    Patient ID: <tspan fill="#f8fafc">PT-REAL-VIDEO-120FPS</tspan> • Mode: Sternal/Arm 120+ FPS Contact sPPG
+  </text>
+
+  <!-- ================= PANEL 1: Sternal sPPG Pulse Wave (IT Feet + Peaks) ================= -->
+  <rect x="40" y="70" width="580" height="180" fill="#131d31" stroke="#1e293b" rx="10"/>
+  <text x="60" y="94" font-size="12" font-weight="bold" fill="#38bdf8">
+    1. Sternal Contact sPPG (GRD Motion Cancelled) • Intersecting Tangents
+  </text>
+  <line x1="60" y1="150" x2="580" y2="150" stroke="#1e293b" stroke-dasharray="3"/>
+  <polyline fill="none" stroke="#10b981" stroke-width="2.5" points="60.0,206.7 65.6,206.7 71.2,206.6 76.8,206.5 82.4,206.5 88.0,206.6 93.5,206.7 99.1,206.9 104.7,207.2 110.3,207.4 115.9,207.4 121.5,207.3 127.1,207.1 132.7,206.7 138.3,206.3 143.9,206.0 149.5,206.0 155.1,206.3 160.6,206.7 166.2,207.0 171.8,207.2 177.4,207.0 183.0,206.8 188.6,206.5 194.2,206.3 199.8,206.2 205.4,206.1 211.0,206.2 216.6,206.5 222.2,206.8 227.7,207.3 233.3,207.7 238.9,208.0 244.5,208.1 250.1,207.9 255.7,207.4 261.3,206.7 266.9,205.9 272.5,205.2 278.1,204.8 283.7,204.8 289.2,205.2 294.8,206.0 300.4,207.1 306.0,208.1 311.6,208.9 317.2,209.1 322.8,208.9 328.4,208.3 334.0,207.3 339.6,206.1 345.2,205.1 350.8,204.4 356.3,204.2 361.9,204.5 367.5,205.3 373.1,206.3 378.7,207.5 384.3,208.5 389.9,209.3 395.5,209.6 401.1,209.4 406.7,208.5 412.3,207.2 417.8,205.8 423.4,204.5 429.0,203.5 434.6,203.2 440.2,203.8 445.8,205.1 451.4,206.8 457.0,208.4 462.6,209.6 468.2,210.0 473.8,209.7 479.4,208.7 484.9,207.5 490.5,206.2 496.1,205.1 501.7,204.4 507.3,204.2 512.9,204.6 518.5,205.4 524.1,206.5 529.7,207.7 535.3,208.7 540.9,209.2 546.5,209.2 552.0,208.7 557.6,207.7 563.2,206.5 568.8,205.4 574.4,204.6 580.0,204.2 " />
+  <polygon points="121.5,210.3 117.5,217.3 125.5,217.3" fill="#3b82f6" /><polygon points="171.8,210.2 167.8,217.2 175.8,217.2" fill="#3b82f6" /><polygon points="250.1,210.9 246.1,217.9 254.1,217.9" fill="#3b82f6" /><polygon points="322.8,211.9 318.8,218.9 326.8,218.9" fill="#3b82f6" /><polygon points="401.1,212.4 397.1,219.4 405.1,219.4" fill="#3b82f6" /><polygon points="473.8,212.7 469.8,219.7 477.8,219.7" fill="#3b82f6" />
+  <circle cx="143.9" cy="206.0" r="4" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/><circle cx="205.4" cy="206.1" r="4" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/><circle cx="283.7" cy="204.8" r="4" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/><circle cx="356.3" cy="204.2" r="4" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/><circle cx="434.6" cy="203.2" r="4" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/><circle cx="507.3" cy="204.2" r="4" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+  <rect x="440" y="80" width="160" height="22" fill="#0f172a" stroke="#334155" rx="5"/>
+  <text x="520" y="95" font-size="10" font-weight="bold" text-anchor="middle" fill="#34d399">
+    HR: 133.6 BPM | CT: 188.9ms
+  </text>
+
+  <!-- ================= PANEL 2: SDPPG Acceleration Wave (Vascular Aging AGI) ================= -->
+  <rect x="660" y="70" width="580" height="180" fill="#131d31" stroke="#1e293b" rx="10"/>
+  <text x="680" y="94" font-size="12" font-weight="bold" fill="#f59e0b">
+    2. Second Derivative Photoplethysmogram (SDPPG / APG) • Vascular Aging
+  </text>
+  <line x1="680" y1="150" x2="1200" y2="150" stroke="#1e293b" stroke-dasharray="3"/>
+  <polyline fill="none" stroke="#f59e0b" stroke-width="2" points="680.0,147.0 685.6,144.8 691.2,147.6 696.8,150.7 702.4,152.6 708.0,152.7 713.5,153.2 719.1,151.4 724.7,143.3 730.3,136.0 735.9,133.8 741.5,134.9 747.1,138.9 752.7,145.3 758.3,156.4 763.9,167.7 769.5,166.4 775.1,156.5 780.6,143.6 786.2,129.7 791.8,127.8 797.4,137.4 803.0,147.2 808.6,152.3 814.2,152.0 819.8,153.4 825.4,157.3 831.0,158.5 836.6,156.4 842.2,151.4 847.7,146.2 853.3,139.9 858.9,130.1 864.5,123.6 870.1,124.7 875.7,131.2 881.3,141.8 886.9,155.1 892.5,167.6 898.1,175.8 903.7,178.0 909.2,176.5 914.8,167.5 920.4,145.9 926.0,124.6 931.6,112.3 937.2,109.5 942.8,114.3 948.4,121.9 954.0,135.1 959.6,155.5 965.2,174.0 970.8,181.9 976.3,184.9 981.9,182.2 987.5,168.0 993.1,152.7 998.7,141.1 1004.3,127.2 1009.9,113.1 1015.5,101.5 1021.1,101.2 1026.7,118.0 1032.3,137.8 1037.8,153.9 1043.4,173.5 1049.0,195.3 1054.6,210.0 1060.2,205.8 1065.8,178.0 1071.4,140.4 1077.0,109.5 1082.6,92.3 1088.2,90.0 1093.8,103.7 1099.4,125.3 1104.9,142.4 1110.5,159.4 1116.1,176.7 1121.7,186.9 1127.3,188.0 1132.9,180.5 1138.5,169.1 1144.1,152.5 1149.7,132.3 1155.3,115.9 1160.9,106.0 1166.5,105.0 1172.0,113.2 1177.6,132.4 1183.2,153.6 1188.8,166.9 1194.4,176.0 1200.0,147.0 " />
+  <rect x="1030" y="80" width="190" height="22" fill="#0f172a" stroke="#334155" rx="5"/>
+  <text x="1125" y="95" font-size="10" font-weight="bold" text-anchor="middle" fill="#fbbf24">
+    AGI: 0.75 | b/a: 0.25
+  </text>
+
+  <!-- ================= PANEL 3: Welch PSD Autonomic Spectrum (LF/HF) ================= -->
+  <rect x="40" y="270" width="580" height="180" fill="#131d31" stroke="#1e293b" rx="10"/>
+  <text x="60" y="294" font-size="12" font-weight="bold" fill="#a855f7">
+    3. Welch PSD Autonomic Spectrum (Cardiac Peak: 2.23 Hz)
+  </text>
+  <line x1="60" y1="350" x2="580" y2="350" stroke="#1e293b" stroke-dasharray="3"/>
+  <polyline fill="none" stroke="#c084fc" stroke-width="2" points="60.0,410.0 68.7,410.0 77.4,410.0 86.1,410.0 94.8,410.0 103.5,410.0 112.2,410.0 120.9,410.0 129.6,410.0 138.3,410.0 147.1,410.0 155.8,410.0 164.5,410.0 173.2,410.0 181.9,410.0 190.6,410.0 199.3,410.0 208.0,409.9 216.7,409.8 225.4,409.7 234.1,409.6 242.8,409.6 251.5,409.6 260.2,409.8 268.9,410.0 277.6,409.9 286.3,409.1 295.0,407.2 303.8,403.3 312.5,397.1 321.2,388.0 329.9,376.1 338.6,361.6 347.3,345.3 356.0,328.6 364.7,312.9 373.4,300.1 382.1,292.0 390.8,290.0 399.5,294.7 408.2,305.7 416.9,321.6 425.6,340.3 434.3,359.4 443.0,376.5 451.7,390.2 460.4,399.9 469.2,405.8 477.9,408.7 486.6,409.8 495.3,409.9 504.0,409.7 512.7,409.5 521.4,409.4 530.1,409.4 538.8,409.3 547.5,409.2 556.2,409.2 564.9,409.2 573.6,409.2 " />
+  <rect x="440" y="280" width="160" height="22" fill="#0f172a" stroke="#334155" rx="5"/>
+  <text x="520" y="295" font-size="10" font-weight="bold" text-anchor="middle" fill="#d8b4fe">
+    LF/HF Ratio: 1.5 (Balanced)
+  </text>
+
+  <!-- ================= PANEL 4: Poincaré Non-Linear Dynamics ================= -->
+  <rect x="660" y="270" width="580" height="180" fill="#131d31" stroke="#1e293b" rx="10"/>
+  <text x="680" y="294" font-size="12" font-weight="bold" fill="#38bdf8">
+    4. Poincaré Non-Linear Dynamics (NN[k] vs NN[k+1])
+  </text>
+  <rect x="710" y="275" width="160" height="160" fill="#0b1120" stroke="#1e293b" rx="6"/>
+  <line x1="710" y1="435" x2="870" y2="275" stroke="#334155" stroke-dasharray="2"/>
+  <circle cx="742.7" cy="302.7" r="4" fill="#10b981" stroke="#064e3b" stroke-width="1" opacity="0.8"/><circle cx="837.3" cy="321.6" r="4" fill="#10b981" stroke="#064e3b" stroke-width="1" opacity="0.8"/><circle cx="818.4" cy="302.7" r="4" fill="#10b981" stroke="#064e3b" stroke-width="1" opacity="0.8"/><circle cx="837.3" cy="321.6" r="4" fill="#10b981" stroke="#064e3b" stroke-width="1" opacity="0.8"/>
+  <rect x="910" y="320" width="310" height="90" fill="#0f172a" stroke="#334155" rx="6"/>
+  <text x="925" y="345" font-size="11" fill="#94a3b8">• SD1 (Short-Term / Parasymp): <tspan font-weight="bold" fill="#38bdf8">62.4 ms</tspan></text>
+  <text x="925" y="370" font-size="11" fill="#94a3b8">• SD2 (Long-Term Autonomic): <tspan font-weight="bold" fill="#38bdf8">61.3 ms</tspan></text>
+  <text x="925" y="395" font-size="11" fill="#94a3b8">• HRV RMSSD: <tspan font-weight="bold" fill="#34d399">88.2 ms</tspan></text>
+
+  <!-- ================= PANEL 5: Tri-Modal Smart Respiratory Fusion ================= -->
+  <rect x="40" y="470" width="580" height="230" fill="#131d31" stroke="#1e293b" rx="10"/>
+  <text x="60" y="494" font-size="12" font-weight="bold" fill="#06b6d4">
+    5. Tri-Modal Smart Respiration Fusion (Sternal Rib Excursion vs RSA)
+  </text>
+
+  <!-- Bar 1: BW Sternal Rib Cage -->
+  <text x="60" y="530" font-size="11" fill="#94a3b8">Baseline Wander (BW - Ribs):</text>
+  <rect x="250" y="518" width="168.8" height="16" fill="#06b6d4" rx="3"/>
+  <text x="428.8" y="531" font-size="11" font-weight="bold" fill="#22d3ee">21.1 BrPM</text>
+
+  <!-- Bar 2: AM Stroke Volume -->
+  <text x="60" y="565" font-size="11" fill="#94a3b8">Amplitude Mod (AM - Stroke):</text>
+  <rect x="250" y="553" width="168.8" height="16" fill="#3b82f6" rx="3"/>
+  <text x="428.8" y="566" font-size="11" font-weight="bold" fill="#60a5fa">21.1 BrPM</text>
+
+  <!-- Bar 3: FM Respiratory Sinus Arrhythmia -->
+  <text x="60" y="600" font-size="11" fill="#94a3b8">Freq Mod (FM - Vagal RSA):</text>
+  <rect x="250" y="588" width="168.8" height="16" fill="#8b5cf6" rx="3"/>
+  <text x="428.8" y="601" font-size="11" font-weight="bold" fill="#a78bfa">21.1 BrPM</text>
+
+  <!-- Consensus Badge -->
+  <rect x="60" y="630" width="540" height="50" fill="#0f172a" stroke="#334155" rx="6"/>
+  <text x="75" y="660" font-size="12" font-weight="bold" fill="#f8fafc">
+    CONSENSUS RESPIRATION: <tspan fill="#38bdf8" font-size="15">21.1 BrPM</tspan>
+  </text>
+  <text x="440" y="660" font-size="11" fill="#f59e0b">
+    ⚠ Frequency Variance
+  </text>
+
+  <!-- ================= PANEL 6: Clinical Vitals Matrix & Multi-Tier SQI ================= -->
+  <rect x="660" y="470" width="580" height="230" fill="#131d31" stroke="#1e293b" rx="10"/>
+  <text x="680" y="494" font-size="12" font-weight="bold" fill="#f43f5e">
+    6. Clinical Hemodynamic Matrix & 4-Gate SQI Protocol
+  </text>
+
+  <g transform="translate(680, 515)">
+    <!-- Column 1 -->
+    <rect x="0" y="0" width="165" height="75" fill="#0f172a" stroke="#1e293b" rx="6"/>
+    <text x="15" y="24" font-size="10" fill="#94a3b8">HEART RATE</text>
+    <text x="15" y="55" font-size="22" font-weight="bold" fill="#ef4444">133.6 <tspan font-size="11" font-weight="normal" fill="#64748b">BPM</tspan></text>
+
+    <!-- Column 2 -->
+    <rect x="180" y="0" width="165" height="75" fill="#0f172a" stroke="#1e293b" rx="6"/>
+    <text x="195" y="24" font-size="10" fill="#94a3b8">SpO2 PROXY (Reflectance)</text>
+    <text x="195" y="55" font-size="22" font-weight="bold" fill="#38bdf8">100 <tspan font-size="11" font-weight="normal" fill="#64748b">%</tspan></text>
+
+    <!-- Column 3 -->
+    <rect x="360" y="0" width="180" height="75" fill="#0f172a" stroke="#1e293b" rx="6"/>
+    <text x="375" y="24" font-size="10" fill="#94a3b8">PERFUSION INDEX (PI)</text>
+    <text x="375" y="55" font-size="22" font-weight="bold" fill="#10b981">2.65 <tspan font-size="11" font-weight="normal" fill="#64748b">%</tspan></text>
+
+    <!-- Row 2: SQI Diagnostics -->
+    <rect x="0" y="90" width="540" height="85" fill="#0f172a" stroke="#334155" rx="6"/>
+    <text x="15" y="112" font-size="11" font-weight="bold" fill="#f8fafc">4-GATE SIGNAL QUALITY INDEX (SQI): <tspan fill="#34d399">100%</tspan></text>
+    <text x="15" y="132" font-size="10" fill="#94a3b8">• PI Gate (>=0.15%): <tspan fill="#34d399">PASSED</tspan></text>
+    <text x="210" y="132" font-size="10" fill="#94a3b8">• Template Corr (r): <tspan fill="#38bdf8">0.92</tspan></text>
+    <text x="390" y="132" font-size="10" fill="#94a3b8">• Skewness (S>0): <tspan fill="#38bdf8">0.02</tspan></text>
+    <text x="15" y="156" font-size="10" fill="#94a3b8">• Sternal Contact Force: <tspan font-weight="bold" fill="#34d399">OPTIMAL</tspan></text>
+    <text x="320" y="156" font-size="10" fill="#94a3b8">• Asystole State: <tspan font-weight="bold" fill="#34d399">PULSATILE RHYTHM</tspan></text>
+  </g>
+
+  <!-- Footer Info -->
+  <text x="640" y="730" font-size="11" text-anchor="middle" fill="#64748b">
+    Generated automatically by PulseGuard / The Intermediator On-Device DSP Engine • Direct Paramedic Telemetry Relay
+  </text>
+</svg>
