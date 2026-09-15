@@ -32,6 +32,8 @@ backend/data/*.json
 backend/charts/*.svg
 backend/charts/*.png
 backend/charts/*.jpg
+storage/charts/*.svg
+storage/photos/*.svg
 
 # OS artifacts
 Thumbs.db

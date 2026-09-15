@@ -11,7 +11,16 @@ import { storageService } from "./services/storage.ts";
 import { telegramService } from "./services/telegram.ts";
 import { db } from "./services/db.ts";
 
-const processor = new ClinicalPPGProcessor(30.0);
+const processorCache: Map<number, ClinicalPPGProcessor> = new Map();
+
+export function getClinicalProcessor(samplingRate: number = 30.0): ClinicalPPGProcessor {
+  const fs = Math.max(15, Math.min(240, Math.round(samplingRate || 30.0)));
+  if (!processorCache.has(fs)) {
+    processorCache.set(fs, new ClinicalPPGProcessor(fs));
+  }
+  return processorCache.get(fs)!;
+}
+
 const patientBuffers: Map<string, number[][] | number[]> = new Map();
 
 function setCorsHeaders(res: http.ServerResponse) {
@@ -35,8 +44,14 @@ function readJsonBody(req: http.IncomingMessage): Promise<any> {
   });
 }
 
-export async function evaluateVitalsAndEscalate(patientId: string, samples: number[][] | number[], isRgb: boolean = true) {
-  const analysis = processor.analyzeWindow(samples, isRgb);
+export async function evaluateVitalsAndEscalate(
+  patientId: string,
+  samples: number[][] | number[],
+  isRgb: boolean = true,
+  samplingRate: number = 30.0
+) {
+  const activeProcessor = getClinicalProcessor(samplingRate);
+  const analysis = activeProcessor.analyzeWindow(samples, isRgb);
 
   // Simplified MEWS risk score
   let mews = 0;
@@ -114,7 +129,7 @@ export async function evaluateVitalsAndEscalate(patientId: string, samples: numb
   if (anomalyDetected) {
     const chartFilename = `chart_${patientId}_${Date.now()}.svg`;
     chartPath = path.join(config.chartsDir, chartFilename);
-    generateClinicalSvgCard(patientId, analysis, chartPath, processor.fs);
+    generateClinicalSvgCard(patientId, analysis, chartPath, activeProcessor.fs);
 
     // Save clinical event
     db.events.push({
@@ -248,10 +263,13 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
+      const samplingRate = Number(payload.sampling_rate || payload.fps || 30.0);
+
       const { analysis, mews, anomalyDetected, reasonStr } = await evaluateVitalsAndEscalate(
         patientId,
         samples,
-        isRgb
+        isRgb,
+        samplingRate
       );
 
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -336,12 +354,14 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const analysis = processor.analyzeWindow(samples, isRgb);
+      const samplingRate = Number(payload.sampling_rate || payload.fps || 30.0);
+      const activeProcessor = getClinicalProcessor(samplingRate);
+      const analysis = activeProcessor.analyzeWindow(samples, isRgb);
 
       // Generate the scientific 4-panel SVG
       const chartFilename = `clinical_report_${patientId}_${Date.now()}.svg`;
       const chartPath = path.join(config.chartsDir, chartFilename);
-      generateClinicalSvgCard(patientId, analysis, chartPath, processor.fs);
+      generateClinicalSvgCard(patientId, analysis, chartPath, activeProcessor.fs);
 
       // Simplified MEWS risk score
       let mews = 0;
@@ -501,32 +521,59 @@ wss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
         }
       }
 
-      // Maintain sliding window of 30 seconds (900 samples at 30Hz)
-      const maxWindow = 30 * 30;
+      const samplingRate = Number(payload.sampling_rate || payload.fps || 30.0);
+      const fs = Math.max(15, Math.min(240, Math.round(samplingRate)));
+
+      // Maintain sliding window of 30 seconds
+      const maxWindow = Math.round(30 * fs);
       if (buffer.length > maxWindow) {
         buffer.splice(0, buffer.length - maxWindow);
       }
 
-      // Analyze window when we have >= 5 seconds of data (150 samples)
-      if (buffer.length >= 150) {
+      // Analyze window when we have >= 3 seconds of data
+      const minRequired = Math.round(3 * fs);
+      if (buffer.length >= minRequired) {
         const { analysis, mews, anomalyDetected, reasonStr } = await evaluateVitalsAndEscalate(
           patientId,
           buffer,
-          isRgb
+          isRgb,
+          fs
         );
 
         const filtered = analysis.filtered_bvp || [];
-        const recentWave = filtered.slice(-30);
+        const recentWave = filtered.slice(-Math.round(fs));
 
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(
             JSON.stringify({
               status: "active",
+              patient_id: patientId,
+              sampling_rate: fs,
               heart_rate_bpm: analysis.dominant_bpm,
               respiration_rate_brpm: analysis.respiration_brpm,
               spo2_percent: analysis.spo2_percent,
+              perfusion_index: analysis.perfusion_index,
               hrv_rmssd_ms: analysis.rmssd_ms,
+              hrv_sdnn_ms: analysis.sdnn_ms,
+              hrv_lf_hf_ratio: analysis.lf_hf_ratio,
               mews_score: mews,
+              contact_pressure_status: analysis.contact_pressure_status,
+              contact_pressure_feedback:
+                analysis.contact_pressure_status === "OVER_PRESSURE_BLANCHING"
+                  ? "Excessive sternal contact force (capillary blanching)"
+                  : analysis.contact_pressure_status === "UNDER_PRESSURE"
+                  ? "Insufficient contact coupling (air-gap detected)"
+                  : "Optimal hemodynamic transmural pressure",
+              asystole_detected: analysis.asystole_detected,
+              sqi_tier:
+                analysis.sqi_metrics.overall_sqi_score > 0.8
+                  ? "TIER_1_EXCELLENT"
+                  : analysis.sqi_metrics.overall_sqi_score > 0.5
+                  ? "TIER_2_ACCEPTABLE"
+                  : "TIER_3_REJECTED",
+              overall_sqi_pct: Math.round(analysis.sqi_metrics.overall_sqi_score * 100),
+              sdppg_aging_index: analysis.sdppg_metrics.aging_index,
+              vascular_stiffness_b_a: analysis.sdppg_metrics.stiffness_ratio_b_a,
               anomaly_detected: anomalyDetected,
               anomaly_reason: reasonStr,
               wave_slice: recentWave,
