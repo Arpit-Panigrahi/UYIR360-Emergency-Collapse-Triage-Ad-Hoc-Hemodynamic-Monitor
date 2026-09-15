@@ -201,6 +201,37 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // FLOW: POST /api/v1/mobile/session/start (React Native mobile onboarding)
+  if (pathname === "/api/v1/mobile/session/start" && req.method === "POST") {
+    try {
+      const payload = await readJsonBody(req);
+      const patientId = payload.patient_id || `PT-${Math.floor(10000 + Math.random() * 90000)}`;
+      const deviceId = payload.device_id || "REACT_NATIVE_CLIENT";
+      patientBuffers.set(patientId, []);
+
+      console.log(`[MOBILE SESSION] Registered new triage session ${patientId} from ${deviceId}`);
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          status: "session_initialized",
+          patient_id: patientId,
+          session_id: patientId,
+          device_id: deviceId,
+          stream_ws_url: `/api/v1/telemetry/stream/${patientId}`,
+          ingest_http_url: "/api/v1/telemetry/ingest-batch",
+          report_http_url: "/api/v1/telemetry/generate-report",
+          created_at: new Date().toISOString(),
+        })
+      );
+      return;
+    } catch (e: any) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+      return;
+    }
+  }
+
   // FLOW: POST /api/v1/telemetry/ingest-batch
   if (pathname === "/api/v1/telemetry/ingest-batch" && req.method === "POST") {
     try {
