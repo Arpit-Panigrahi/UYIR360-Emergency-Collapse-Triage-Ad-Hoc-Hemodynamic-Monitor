@@ -46,6 +46,15 @@ This platform does not attempt to replace doctors or paramedics. Instead, it ser
 
 ---
 
+## 📸 Platform Interface & Live Telemetry Previews
+
+| Edge Mobile Hemodynamic Monitor (`mobile/`) | Central Clinician Dashboard (`website/`) |
+| :---: | :---: |
+| <img src="docs/screenshots/mobile-stats.jpg" width="320" alt="Mobile Edge Hemodynamic Monitor Screen" /> | <img src="docs/screenshots/running-web.png" width="600" alt="Central Clinician Telemetry Dashboard" /> |
+| **Edge Mobile Client:** Real-time contact sPPG vital extraction, dynamic pressure gauge, SDPPG vascular compliance, and automated CPR/triage triggers. | **Central Clinician HUD:** 60 FPS live waveform canvas, multi-patient telemetry stream, triage feeds, and paramedic Telegram audit escalation. |
+
+---
+
 ## 🏛️ Core Functional Pillars
 
 ### 1. Instantaneous Contact Triage (< 5 Seconds)
