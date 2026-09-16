@@ -41,6 +41,10 @@ yarn-error.log*
 # Generated dynamic charts & telemetry DB
 backend/data/*.json
 backend/charts/*
+website/storage/charts/*
+!website/storage/charts/.gitkeep
+website/storage/photos/*
+!website/storage/photos/.gitkeep
 storage/charts/*
 !storage/charts/.gitkeep
 storage/photos/*
