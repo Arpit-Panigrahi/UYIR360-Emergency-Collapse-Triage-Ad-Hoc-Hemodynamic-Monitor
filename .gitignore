@@ -8,6 +8,17 @@ node_modules/
 out/
 build/
 dist/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
 
 # Logs & temp
 *.log
@@ -29,11 +40,14 @@ yarn-error.log*
 
 # Generated dynamic charts & telemetry DB
 backend/data/*.json
-backend/charts/*.svg
-backend/charts/*.png
-backend/charts/*.jpg
-storage/charts/*.svg
-storage/photos/*.svg
+backend/charts/*
+storage/charts/*
+!storage/charts/.gitkeep
+storage/photos/*
+!storage/photos/.gitkeep
+
+# Ad-hoc media dumps
+WhatsApp Image*
 
 # OS artifacts
 Thumbs.db
